@@ -1,0 +1,12 @@
+workflows:
+  default-workflow:
+    name: Default Workflow
+    environment:
+      flutter: stable
+      xcode: latest
+    scripts:
+      - flutter pub get
+      - flutter build appbundle --release --no-tree-shake-icons
+    artifacts:
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/**.apk
