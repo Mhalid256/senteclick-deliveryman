@@ -9,8 +9,8 @@ class AppConstants {
   ///flutter SDK : 3.38.5
   static const bool demo = false;
   static const int imageQuality = 100;
-  static const String polylineMapKey ='AIzaSyCJgNunTPj_oNBjSfwjRUmvaXLFp9qdaVw';
-      
+  static const String polylineMapKey =
+      'AIzaSyBN1J0Tda2NPnlsV-lbokf-i7e03TdJ57I';
 
   static const String baseUri = 'https://senteclick.com';
 

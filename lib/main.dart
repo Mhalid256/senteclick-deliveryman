@@ -20,10 +20,9 @@ import 'helper/get_di.dart' as di;
 import 'package:url_strategy/url_strategy.dart';
 import 'helper/notification_helper.dart';
 
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 late AndroidNotificationChannel channel;
-
 
 Future<void> main() async {
   setPathUrlStrategy();
@@ -31,34 +30,27 @@ Future<void> main() async {
 
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
 
-
-  if(Firebase.apps.isEmpty){
-    if(Platform.isAndroid) {
-      try{
-        await Firebase.initializeApp(options: const FirebaseOptions(
-          apiKey: "current_key here",
-          projectId: "project_id here",
-          messagingSenderId: "project_number here",
-          appId: "mobilesdk_app_id here"
-        ));
-      } finally{
-        await Firebase.initializeApp();
-      }
-    }else{
+  // Initialize Firebase once. Provide explicit options only on web.
+  if (Firebase.apps.isEmpty) {
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyB1RwjqAY-uFR016fPLPwSELt_lajcfGvE",
+          projectId: "senteclick-5e295",
+          messagingSenderId: "17319572619",
+          appId: "1:17319572619:web:c1727b107cc7435e32108e",
+        ),
+      );
+    } else {
       await Firebase.initializeApp();
     }
   }
 
-
-
-  if(defaultTargetPlatform == TargetPlatform.android) {
+  if (defaultTargetPlatform == TargetPlatform.android) {
     await FirebaseMessaging.instance.requestPermission();
   }
 
-
-
   Map<String, Map<String, String>> languages = await di.init();
-
 
   NotificationBody? body;
 
@@ -68,15 +60,18 @@ Future<void> main() async {
       'High Importance Notifications',
       importance: Importance.high,
     );
-    final RemoteMessage? remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    final RemoteMessage? remoteMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
     if (remoteMessage != null) {
       body = NotificationBody.fromJson(remoteMessage.data);
     }
     await NotificationHelper.initialize(flutterLocalNotificationsPlugin);
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
-  }catch(_) {}
-
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  } catch (_) {}
 
   runApp(MyApp(languages: languages, body: body));
 }
@@ -87,28 +82,29 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.languages, this.body});
   @override
   Widget build(BuildContext context) {
-
     return GetBuilder<ThemeController>(builder: (themeController) {
       return GetBuilder<LocalizationController>(builder: (localizeController) {
         return GetBuilder<SplashController>(builder: (splashController) {
-          return  GetMaterialApp(
-            title: AppConstants.appName,
-            debugShowCheckedModeBanner: false,
-            navigatorKey: Get.key,
-            theme: themeController.darkTheme ? dark : light,
-            locale: localizeController.locale,
-            translations: Messages(languages: languages),
-            fallbackLocale: Locale(AppConstants.languages[0].languageCode!, AppConstants.languages[0].countryCode),
-            home: SplashScreen(body: body),
-            defaultTransition: Transition.topLevel,
-            transitionDuration: const Duration(milliseconds: 500),
-              builder:(context,child) {
-                return MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling), child: SafeArea(top: false, child: child!));
-              }
-          );
+          return GetMaterialApp(
+              title: AppConstants.appName,
+              debugShowCheckedModeBanner: false,
+              navigatorKey: Get.key,
+              theme: themeController.darkTheme ? dark : light,
+              locale: localizeController.locale,
+              translations: Messages(languages: languages),
+              fallbackLocale: Locale(AppConstants.languages[0].languageCode!,
+                  AppConstants.languages[0].countryCode),
+              home: SplashScreen(body: body),
+              defaultTransition: Transition.topLevel,
+              transitionDuration: const Duration(milliseconds: 500),
+              builder: (context, child) {
+                return MediaQuery(
+                    data: MediaQuery.of(context)
+                        .copyWith(textScaler: TextScaler.noScaling),
+                    child: SafeArea(top: false, child: child!));
+              });
         });
       });
     });
   }
 }
-
