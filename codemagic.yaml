@@ -3,11 +3,12 @@ workflows:
     name: Default Workflow
     environment:
       flutter: stable
-      xcode: latest
-      vars:
-        GRADLE_OPTS: "-Xmx4g -Xms2g"
+      java: 17
+      android_signing:
+        - senteclick   # ← use the exact name from the UI
     scripts:
+      - flutter clean
       - flutter pub get
-      - flutter build apk --release --no-tree-shake-icons
+      - flutter build appbundle --release --no-tree-shake-icons
     artifacts:
-      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
